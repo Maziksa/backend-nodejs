@@ -1,0 +1,6 @@
+{
+  "name": "logger-module",
+  "version": "1.0.0",
+  "description": "Shared logger for the log system (no dependencies)",
+  "main": "index.js"
+}

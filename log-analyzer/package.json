@@ -1,0 +1,12 @@
+{
+  "name": "log-analyzer",
+  "version": "1.0.0",
+  "description": "Analyzes log files.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "logger-module": "file:../logger-module"
+  }
+}
