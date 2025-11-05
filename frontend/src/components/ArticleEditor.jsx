@@ -14,38 +14,27 @@ function ArticleEditor() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!title.trim() || !content.trim()) {
             setError('Title and content are required.');
             return;
         }
-
         setSubmitting(true);
         setError(null);
 
         try {
             const response = await fetch(`${API_URL}/articles`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ title, content }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
             });
-
             if (!response.ok) {
-                if (response.status === 400) {
-                    const errData = await response.json();
-                    setError(errData.error || 'Bad request');
-                } else {
-                    setError(`Server error: ${response.statusText}`);
-                }
+                const errData = await response.json();
+                setError(errData.error || 'Bad request');
+                setSubmitting(false);
                 return;
             }
-
-
             const newArticle = await response.json();
             navigate(`/articles/${newArticle.id}`);
-
         } catch (e) {
             setError(e.message);
         } finally {
@@ -61,7 +50,7 @@ function ArticleEditor() {
                 <input
                     type="text"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={e => setTitle(e.target.value)}
                     placeholder="Article Title"
                     disabled={submitting}
                 />
