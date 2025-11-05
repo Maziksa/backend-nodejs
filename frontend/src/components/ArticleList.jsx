@@ -16,7 +16,7 @@ function ArticleList() {
 
                 if (!response.ok) {
                     setError(`HTTP error! status: ${response.status}`);
-                    return; // Stop execution
+                    return;
                 }
 
                 const data = await response.json();

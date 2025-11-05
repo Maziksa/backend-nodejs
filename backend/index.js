@@ -85,6 +85,54 @@ app.post('/api/articles', async (req, res) => {
     }
 });
 
+app.put('/api/articles/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    if (!id || !/^[a-f0-9\-]+$/.test(id)) {
+        return res.status(400).json({ error: 'Invalid article ID format' });
+    }
+    if (!title || !content) {
+        return res.status(400).json({ error: 'Title and content are required fields.' });
+    }
+    const filePath = path.join(DATADIR, `${id}.json`);
+    try {
+        // Check if article exists
+        await fs.access(filePath);
+        // Overwrite file
+        const updatedArticle = { id, title, content };
+        await fs.writeFile(filePath, JSON.stringify(updatedArticle, null, 2));
+        res.json(updatedArticle);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            res.status(404).json({ error: 'Article not found' });
+        } else {
+            console.error('Failed to update article', err);
+            res.status(500).json({ error: 'Failed to update article' });
+        }
+    }
+});
+
+app.delete('/api/articles/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!id || !/^[a-f0-9\-]+$/.test(id)) {
+        return res.status(400).json({ error: 'Invalid article ID format' });
+    }
+    const filePath = path.join(DATADIR, `${id}.json`);
+    try {
+        // Check if article exists
+        await fs.access(filePath);
+        await fs.unlink(filePath);
+        res.status(204).end();
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            res.status(404).json({ error: 'Article not found' });
+        } else {
+            console.error('Failed to delete article', err);
+            res.status(500).json({ error: 'Failed to delete article' });
+        }
+    }
+});
+
 async function startServer() {
     try {
         await ensureDataDir();

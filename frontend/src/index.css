@@ -129,3 +129,29 @@ nav a:hover {
     border-radius: 4px;
     border: 1px solid #d93025;
 }
+
+.article-action-btn {
+  font-size: 1.1rem;
+  padding: 0.5rem 1.2rem;
+  margin-right: 1rem;
+  background-color: #d93025;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.article-action-btn:hover {
+  background-color: #a62117;
+}
+
+.article-action-link {
+  font-size: 1.1rem;
+  color: #007aff;
+  text-decoration: none;
+  transition: color 0.15s;
+  padding-bottom: 2px;
+}
+.article-action-link:hover {
+  text-decoration: underline;
+}
