@@ -9,12 +9,11 @@ function ArticleEditor({ isEditMode }) {
   const { id } = useParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(isEditMode); // только для редактирования true
+  const [loading, setLoading] = useState(isEditMode);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // Если редактируем, подгружаем данные
   useEffect(() => {
     if (isEditMode && id) {
       async function fetchArticle() {

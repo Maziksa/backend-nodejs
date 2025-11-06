@@ -17,10 +17,11 @@ function App() {
       </nav>
       <main className="container">
         <Routes>
-          <Route path="/articles" element={<ArticleList />} />
-          <Route path="/articles/:id" element={<ArticleView />} />
-          <Route path="/create" element={<ArticleEditor isEditMode={false} />} />
-          <Route path="/edit/:id" element={<ArticleEditor isEditMode={true} />} />
+          <Route path="/" element={<ArticleList />} />
+          <Route path="articles" element={<ArticleList />} />
+          <Route path="articles/:id" element={<ArticleView />} />
+          <Route path="create" element={<ArticleEditor isEditMode={false} />} />
+          <Route path="edit/:id" element={<ArticleEditor isEditMode={true} />} />
         </Routes>
       </main>
     </BrowserRouter>

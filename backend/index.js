@@ -96,9 +96,7 @@ app.put('/api/articles/:id', async (req, res) => {
     }
     const filePath = path.join(DATADIR, `${id}.json`);
     try {
-        // Check if article exists
         await fs.access(filePath);
-        // Overwrite file
         const updatedArticle = { id, title, content };
         await fs.writeFile(filePath, JSON.stringify(updatedArticle, null, 2));
         res.json(updatedArticle);
@@ -119,7 +117,6 @@ app.delete('/api/articles/:id', async (req, res) => {
     }
     const filePath = path.join(DATADIR, `${id}.json`);
     try {
-        // Check if article exists
         await fs.access(filePath);
         await fs.unlink(filePath);
         res.status(204).end();
