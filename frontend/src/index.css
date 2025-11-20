@@ -1,133 +1,328 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  color: #333;
 }
 
 #root {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-
 nav {
-    background-color: #fff;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
 nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1.5rem;
 }
 
 nav a {
-    text-decoration: none;
-    color: #007aff;
-    font-weight: 500;
-    font-size: 1.1rem;
-}
-nav a:hover {
-    text-decoration: underline;
+  text-decoration: none;
+  color: #007aff;
+  font-weight: 500;
+  font-size: 1.1rem;
 }
 
+nav a:hover {
+  text-decoration: underline;
+}
 
 .container {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-
 
 .article-list ul {
-    list-style: none;
-    padding: 0;
-}
-.article-list li {
-    margin-bottom: 0.5rem;
-}
-.article-list a {
-    font-size: 1.2rem;
-    text-decoration: none;
-    color: #007aff;
-}
-.article-list a:hover {
-    text-decoration: underline;
+  list-style: none;
+  padding: 0;
 }
 
+.article-list li {
+  margin-bottom: 0.5rem;
+}
+
+.article-list a {
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: #007aff;
+}
+
+.article-list a:hover {
+  text-decoration: underline;
+}
 
 .article-view h1 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .article-view .content {
-    line-height: 1.7;
+  line-height: 1.7;
+  margin-top: 2rem;
 }
 
 .article-view .content p {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .article-view .content pre {
-    background-color: #f4f4f4;
-    padding: 1rem;
-    border-radius: 4px;
-    overflow-x: auto;
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
 }
 
+.attachments-section {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.attachments-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  transition: background-color 0.15s;
+}
+
+.attachment-item:hover {
+  background-color: #f0f8ff;
+}
+
+.attachment-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #007aff;
+  flex: 1;
+}
+
+.attachment-link:hover {
+  text-decoration: underline;
+}
+
+.attachment-icon {
+  font-size: 1.5rem;
+}
+
+.attachment-name {
+  font-weight: 500;
+}
+
+.attachment-size {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.attachment-delete-btn {
+  background-color: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.attachment-delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.upload-section {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upload-label {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.upload-input {
+  display: none;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #34c759;
+  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.15s;
+}
+
+.upload-button:hover {
+  background-color: #28a745;
+}
+
+.upload-hint {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+}
+
+.notification {
+  background-color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  animation: slideIn 0.3s ease-out;
+  border-left: 4px solid #007aff;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-success {
+  border-left-color: #34c759;
+}
+
+.notification-info {
+  border-left-color: #007aff;
+}
+
+.notification-warning {
+  border-left-color: #ff9500;
+}
+
+.notification-error {
+  border-left-color: #ff3b30;
+}
+
+.notification span {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.notification-close:hover {
+  color: #333;
+}
 
 .article-editor form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
+
 .article-editor input[type='text'] {
-    font-size: 1.5rem;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  font-size: 1.5rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .ql-container {
-    min-height: 250px;
-    font-size: 1rem;
-}
-.article-editor button {
-    font-size: 1.1rem;
-    padding: 0.75rem 1.5rem;
-    background-color: #007aff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    align-self: flex-start;
-}
-.article-editor button:disabled {
-    background-color: #ccc;
+  min-height: 250px;
+  font-size: 1rem;
 }
 
+.article-editor button {
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.article-editor button:disabled {
+  background-color: #ccc;
+}
 
 .loading {
-    font-style: italic;
-    color: #888;
+  font-style: italic;
+  color: #888;
 }
 
 .error {
-    color: #d93025;
-    background-color: #fbe9e7;
-    padding: 1rem;
-    border-radius: 4px;
-    border: 1px solid #d93025;
+  color: #d93025;
+  background-color: #fbe9e7;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #d93025;
 }
 
 .article-action-btn {
@@ -141,6 +336,7 @@ nav a:hover {
   cursor: pointer;
   transition: background 0.15s;
 }
+
 .article-action-btn:hover {
   background-color: #a62117;
 }
@@ -152,6 +348,7 @@ nav a:hover {
   transition: color 0.15s;
   padding-bottom: 2px;
 }
+
 .article-action-link:hover {
   text-decoration: underline;
 }

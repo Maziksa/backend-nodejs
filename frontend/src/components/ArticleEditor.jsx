@@ -44,8 +44,10 @@ function ArticleEditor({ isEditMode }) {
       setError('Title and content are required.');
       return;
     }
+
     setSubmitting(true);
     setError(null);
+
     try {
       let response;
       if (isEditMode) {
@@ -61,12 +63,14 @@ function ArticleEditor({ isEditMode }) {
           body: JSON.stringify({ title, content })
         });
       }
+
       if (!response.ok) {
         const errData = await response.json();
         setError(errData.error || (isEditMode ? 'Update failed' : 'Create failed'));
         setSubmitting(false);
         return;
       }
+
       const article = await response.json();
       navigate(`/articles/${isEditMode ? id : article.id}`);
     } catch (e) {
@@ -76,27 +80,28 @@ function ArticleEditor({ isEditMode }) {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="container loading">Loading...</div>;
+
   return (
-    <div className="article-editor">
-      <h2>{isEditMode ? 'Edit Article' : 'Create New Article'}</h2>
+    <div className="container article-editor">
+      <h1>{isEditMode ? 'Edit Article' : 'Create New Article'}</h1>
       {error && <div className="error">{error}</div>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
           placeholder="Article Title"
-          disabled={submitting}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
         />
         <ReactQuill
           theme="snow"
           value={content}
           onChange={setContent}
-          readOnly={submitting}
+          placeholder="Write your article here..."
         />
         <button type="submit" disabled={submitting}>
-          {isEditMode ? 'Save Changes' : 'Submit Article'}
+          {submitting ? 'Saving...' : (isEditMode ? 'Update Article' : 'Create Article')}
         </button>
       </form>
     </div>
