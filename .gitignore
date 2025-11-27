@@ -139,5 +139,5 @@ vite.config.ts.timestamp-*
 
 
 .idea
-data
 uploads
+.env

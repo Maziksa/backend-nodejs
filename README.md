@@ -1,69 +1,76 @@
-# Work with API
+# Articles Application
 
-## Description
-
-This is a simple full-stack application consisting of:
-
-- A frontend built with React.
-- A backend server built with Node.js that manages articles by storing and retrieving them from files.
+A simple full‑stack articles application.  
+Frontend is built with React, backend uses Node.js (Express), PostgreSQL, and Sequelize for data persistence.
 
 ---
-## Setup & Installation
 
-**You must install dependencies for both the frontend and backend.**
+## Project Structure
 
-### 1. Backend Setup
+- `backend/` – REST API, WebSocket notifications, PostgreSQL integration.
+- `frontend/` – React SPA for managing articles and attachments.
 
-#### Navigate to the backend directory
+---
+
+## Prerequisites
+
+- Node.js (v18+ recommended)
+- PostgreSQL (running locally)
+- npm or yarn
+
+---
+
+## Backend Setup
+
+### 1. Install dependencies:
+
 ```
 cd backend
-```
-
-#### Install dependencies
-```
 npm install
 ```
 
-#### Go back to the root
-```
-cd ..
-```
+### 2. Configure environment:
 
-### 2. Frontend Setup
+- Copy `.env.example` to `.env`.
+- Set PostgreSQL connection variables (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
 
-#### Navigate to the frontend directory
-```
-cd frontend
-```
+### 3. Create database (if not created yet):
 
-#### Install dependencies
 ```
-npm install
+CREATE DATABASE articles_db;
 ```
 
-#### Go back to the root
+### 4. Run migrations:
+
 ```
-cd ..
+npx sequelize-cli db:migrate
 ```
 
+Start backend server:
 
----
-## How to Run
-
-**You must run both servers simultaneously in separate terminals.**
-
-### 1. Run the Backend Server
 ```
 cd backend
 npm run dev
 ```
 
-**Server will start at http://localhost:3001**
+The API will be available at `http://localhost:3001/api`.
 
-### 2. Run the Frontend Server
+## Frontend Setup
+
+### 1. Install dependencies:
+
 ```
 cd frontend
 npm run dev
 ```
 
-**App will open at http://localhost:5173 (or similar)**
+The application will be available at `http://localhost:5173`.
+
+---
+
+## Core Features
+
+- Create, read, update, and delete articles.
+- Store articles in PostgreSQL via Sequelize models and migrations.
+- Upload and remove file attachments linked to articles.
+- Receive real‑time notifications about article and attachment changes via WebSockets.
