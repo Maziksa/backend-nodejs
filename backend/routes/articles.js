@@ -8,7 +8,8 @@ export function createArticlesRouter(io) {
 
   router.get('/', async (req, res) => {
     try {
-      const articles = await articleService.getAllArticles();
+      const { workspace } = req.query;
+      const articles = await articleService.getAllArticles(workspace);
       res.json(articles);
     } catch (err) {
       console.error('Error reading articles:', err);
@@ -32,12 +33,13 @@ export function createArticlesRouter(io) {
   router.post('/', async (req, res) => {
     try {
       const article = await articleService.createArticle(req.body);
-      
-      io.emit('article-created', { 
-        id: article.id, 
-        title: article.title 
+
+      io.emit('article-created', {
+        id: article.id,
+        title: article.title,
+        workspace: article.workspace
       });
-      
+
       res.status(201).json(article);
     } catch (err) {
       if (err.code === 'VALIDATION_ERROR') {
@@ -50,13 +52,17 @@ export function createArticlesRouter(io) {
 
   router.put('/:id', validateId, async (req, res) => {
     try {
-      const article = await articleService.updateArticle(req.params.id, req.body);
-      
-      io.emit('article-updated', { 
-        id: article.id, 
-        title: article.title 
+      const article = await articleService.updateArticle(
+        req.params.id,
+        req.body
+      );
+
+      io.emit('article-updated', {
+        id: article.id,
+        title: article.title,
+        workspace: article.workspace
       });
-      
+
       res.json(article);
     } catch (err) {
       if (err.code === 'NOT_FOUND') {
@@ -73,17 +79,16 @@ export function createArticlesRouter(io) {
   router.delete('/:id', validateId, async (req, res) => {
     try {
       const attachments = await articleService.deleteArticle(req.params.id);
-      
+
       if (attachments && attachments.length > 0) {
         await Promise.all(
-          attachments.map(async (attachment) => {
-            await fileService.deleteAttachmentFile(attachment.filename);
-          })
+          attachments.map(async (attachment) =>
+            fileService.deleteAttachmentFile(attachment.filename)
+          )
         );
       }
-      
+
       io.emit('article-deleted', { id: req.params.id });
-      
       res.status(204).send();
     } catch (err) {
       if (err.code === 'NOT_FOUND') {

@@ -3,15 +3,13 @@ export default (sequelize, DataTypes) => {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-      allowNull: false
+      primaryKey: true
     },
     title: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true,
-        len: [1, 255]
+        notEmpty: true
       }
     },
     content: {
@@ -20,11 +18,18 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
+    },
+    workspace: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'personal',
+      validate: {
+        isIn: [['personal', 'university', 'work']]
+      }
     }
   }, {
     tableName: 'articles',
-    timestamps: true,
-    underscored: false
+    timestamps: true
   });
 
   return Article;

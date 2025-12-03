@@ -15,6 +15,7 @@ export async function ensureDir(dir) {
 
 export async function deleteAttachmentFile(filename) {
   const filePath = path.join(CONFIG.UPLOAD_DIR, filename);
+
   try {
     await fs.unlink(filePath);
   } catch (err) {

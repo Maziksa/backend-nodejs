@@ -53,16 +53,22 @@ function NotificationToast() {
       addNotification(`Article updated: "${data.title}"`, 'info');
     });
 
-    socket.on('article-deleted', (data) => {
-      addNotification(`Article deleted`, 'warning');
+    socket.on('article-deleted', () => {
+      addNotification('Article deleted', 'warning');
     });
 
     socket.on('attachment-added', (data) => {
-      addNotification(`File attached to "${data.articleTitle}": ${data.attachment.originalName}`, 'success');
+      addNotification(
+        `File attached to "${data.articleTitle}": ${data.attachment.originalName}`,
+        'success'
+      );
     });
 
     socket.on('attachment-deleted', (data) => {
-      addNotification(`Attachment removed from "${data.articleTitle}"`, 'warning');
+      addNotification(
+        `Attachment removed from "${data.articleTitle}"`,
+        'warning'
+      );
     });
 
     return () => {
@@ -83,26 +89,29 @@ function NotificationToast() {
 
   const addNotification = (message, type) => {
     const id = Date.now() + Math.random();
-    setNotifications(prev => [...prev, { id, message, type }]);
-    
+    setNotifications((prev) => [...prev, { id, message, type }]);
+
     setTimeout(() => {
       removeNotification(id);
     }, 5000);
   };
 
   const removeNotification = (id) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
+    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   if (notifications.length === 0) return null;
 
   return (
     <div className="notification-container">
-      {notifications.map(notif => (
-        <div key={notif.id} className={`notification notification-${notif.type}`}>
+      {notifications.map((notif) => (
+        <div
+          key={notif.id}
+          className={`notification notification-${notif.type}`}
+        >
           <span>{notif.message}</span>
-          <button 
-            className="notification-close" 
+          <button
+            className="notification-close"
             onClick={() => removeNotification(notif.id)}
           >
             ×
@@ -114,4 +123,3 @@ function NotificationToast() {
 }
 
 export default NotificationToast;
-export { socket };

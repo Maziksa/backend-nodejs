@@ -1,6 +1,5 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
@@ -59,7 +58,6 @@ nav a:hover {
 .article-list a {
   font-size: 1.2rem;
   text-decoration: none;
-  color: #007aff;
 }
 
 .article-list a:hover {
@@ -325,6 +323,11 @@ nav a:hover {
   border: 1px solid #d93025;
 }
 
+.date {
+  color: #888;
+  font-size: 0.9rem;
+}
+
 .article-action-btn {
   font-size: 1.1rem;
   padding: 0.5rem 1.2rem;
@@ -350,5 +353,184 @@ nav a:hover {
 }
 
 .article-action-link:hover {
+  text-decoration: underline;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.workspace-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.workspace-personal {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.workspace-university {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.workspace-work {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.workspace-filter {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
+.comments-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #eee;
+}
+
+.comments-section h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.comment-form {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.comment-form .form-group {
+  margin-bottom: 15px;
+}
+
+.comment-form input,
+.comment-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.comment-form textarea {
+  resize: vertical;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.comment-item {
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.comment-header strong {
+  color: #333;
+  font-size: 1rem;
+}
+
+.comment-date {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.comment-content {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.btn-delete-comment {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+}
+
+.btn-delete-comment:hover {
+  text-decoration: underline;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+  background-color: #007aff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0060c9;
+}
+
+.btn-secondary {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-danger {
+  background-color: #d93025;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #a62117;
+}
+
+.back-link {
+  color: #007aff;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.back-link:hover {
   text-decoration: underline;
 }

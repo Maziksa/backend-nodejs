@@ -22,27 +22,39 @@ const fileFilter = (req, file, cb) => {
   ) {
     cb(null, true);
   } else {
-    cb(new Error('Only images (JPG, PNG, GIF, WEBP) and PDF files are allowed!'), false);
+    cb(
+      new Error('Only images (JPG, PNG, GIF, WEBP) and PDF files are allowed!'),
+      false
+    );
   }
 };
 
 export const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
+  storage,
+  fileFilter,
   limits: { fileSize: CONFIG.MAX_FILE_SIZE }
 });
 
 export const handleUploadError = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ error: 'File is too large. Maximum size is 10MB.' });
+      return res
+        .status(400)
+        .json({ error: 'File is too large. Maximum size is 10MB.' });
     }
+
     if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-      return res.status(400).json({ error: 'Unexpected field name.' });
+      return res
+        .status(400)
+        .json({ error: 'Unexpected field name.' });
     }
-    return res.status(400).json({ error: err.message });
-  } else if (err) {
+
     return res.status(400).json({ error: err.message });
   }
+
+  if (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
   next();
 };

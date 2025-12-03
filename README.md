@@ -37,13 +37,13 @@ npm install
 ### 3. Create database (if not created yet):
 
 ```
-CREATE DATABASE articles_db;
+npm run db:create;
 ```
 
 ### 4. Run migrations:
 
 ```
-npx sequelize-cli db:migrate
+npm run db:migrate
 ```
 
 Start backend server:
@@ -74,3 +74,22 @@ The application will be available at `http://localhost:5173`.
 - Store articles in PostgreSQL via Sequelize models and migrations.
 - Upload and remove file attachments linked to articles.
 - Receive real‑time notifications about article and attachment changes via WebSockets.
+
+## Workspaces
+
+Articles can be organized by workspace: `personal`, `university`, `work`.
+Filter available in article list.
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/articles` | List articles |
+| POST | `/api/articles` | Create article |
+| GET | `/api/articles/:id` | Get article |
+| PUT | `/api/articles/:id` | Update article |
+| DELETE | `/api/articles/:id` | Delete article |
+| POST | `/api/articles/:id/attachments` | Upload attachment |
+| DELETE | `/api/articles/:id/attachments/:attachmentId` | Delete attachment |
+| POST | `/api/articles/:id/comments` | Add comment |
+| DELETE | `/api/comments/:id` | Delete comment |

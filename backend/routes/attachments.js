@@ -46,35 +46,43 @@ export function createAttachmentsRouter(io) {
           }
           return res.status(404).json({ error: err.message });
         }
+
         console.error('Error uploading attachment:', err);
-        res.status(500).json({ error: err.message || 'Failed to upload attachment' });
+        res
+          .status(500)
+          .json({ error: err.message || 'Failed to upload attachment' });
       }
     }
   );
 
-  router.delete('/:attachmentId', validateId, validateAttachmentId, async (req, res) => {
-    try {
-      const { id, attachmentId } = req.params;
+  router.delete(
+    '/:attachmentId',
+    validateId,
+    validateAttachmentId,
+    async (req, res) => {
+      try {
+        const { id, attachmentId } = req.params;
 
-      const result = await attachmentService.deleteAttachment(id, attachmentId);
-      
-      await fileService.deleteAttachmentFile(result.filename);
+        const result = await attachmentService.deleteAttachment(id, attachmentId);
+        await fileService.deleteAttachmentFile(result.filename);
 
-      io.emit('attachment-deleted', {
-        articleId: id,
-        articleTitle: result.articleTitle,
-        attachmentId
-      });
+        io.emit('attachment-deleted', {
+          articleId: id,
+          articleTitle: result.articleTitle,
+          attachmentId
+        });
 
-      res.status(204).send();
-    } catch (err) {
-      if (err.code === 'NOT_FOUND') {
-        return res.status(404).json({ error: err.message });
+        res.status(204).send();
+      } catch (err) {
+        if (err.code === 'NOT_FOUND') {
+          return res.status(404).json({ error: err.message });
+        }
+
+        console.error('Error deleting attachment:', err);
+        res.status(500).json({ error: 'Failed to delete attachment' });
       }
-      console.error('Error deleting attachment:', err);
-      res.status(500).json({ error: 'Failed to delete attachment' });
     }
-  });
+  );
 
   return router;
 }

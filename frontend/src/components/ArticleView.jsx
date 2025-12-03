@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = 'http://localhost:3001/api';
 
 function ArticleView() {
   const { id } = useParams();
@@ -9,21 +9,29 @@ function ArticleView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
+
+  const [commentAuthor, setCommentAuthor] = useState('');
+  const [commentContent, setCommentContent] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
+
   const navigate = useNavigate();
 
   const fetchArticle = async () => {
     try {
       setLoading(true);
       setError(null);
+
       const response = await fetch(`${API_URL}/articles/${id}`);
+
       if (!response.ok) {
         if (response.status === 404) {
-          setError("Article not found.");
+          setError('Article not found.');
         } else {
-          setError("Server error. Please try again later.");
+          setError('Server error. Please try again later.');
         }
         return;
       }
+
       const data = await response.json();
       setArticle(data);
     } catch (e) {
@@ -38,15 +46,18 @@ function ArticleView() {
   }, [id]);
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this article?")) return;
-    
+    if (!window.confirm('Are you sure you want to delete this article?')) return;
+
     try {
-      const response = await fetch(`${API_URL}/articles/${id}`, { method: "DELETE" });
+      const response = await fetch(`${API_URL}/articles/${id}`, {
+        method: 'DELETE'
+      });
+
       if (response.status === 204) {
         navigate('/articles');
       } else {
         const errData = await response.json();
-        setError(errData.error || "Error deleting article");
+        setError(errData.error || 'Error deleting article');
       }
     } catch (e) {
       setError(e.message || 'Failed to delete article');
@@ -64,7 +75,15 @@ function ArticleView() {
       return;
     }
 
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'application/pdf'
+    ];
+
     if (!allowedTypes.includes(file.type)) {
       setError('Invalid file type. Only JPG, PNG, GIF, WEBP, and PDF files are allowed.');
       e.target.value = '';
@@ -77,6 +96,7 @@ function ArticleView() {
     try {
       setUploading(true);
       setError(null);
+
       const response = await fetch(`${API_URL}/articles/${id}/attachments`, {
         method: 'POST',
         body: formData
@@ -98,12 +118,15 @@ function ArticleView() {
   };
 
   const handleDeleteAttachment = async (attachmentId) => {
-    if (!window.confirm("Are you sure you want to delete this attachment?")) return;
+    if (!window.confirm('Are you sure you want to delete this attachment?')) return;
 
     try {
-      const response = await fetch(`${API_URL}/articles/${id}/attachments/${attachmentId}`, {
-        method: 'DELETE'
-      });
+      const response = await fetch(
+        `${API_URL}/articles/${id}/attachments/${attachmentId}`,
+        {
+          method: 'DELETE'
+        }
+      );
 
       if (response.status === 204) {
         await fetchArticle();
@@ -116,42 +139,149 @@ function ArticleView() {
     }
   };
 
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!commentAuthor.trim() || !commentContent.trim()) {
+      setError('Author and comment content are required.');
+      return;
+    }
+
+    setSubmittingComment(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/articles/${id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          author: commentAuthor,
+          content: commentContent
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        setError(errData.error || 'Failed to add comment');
+        return;
+      }
+
+      setCommentAuthor('');
+      setCommentContent('');
+      await fetchArticle();
+    } catch (e) {
+      setError(e.message || 'Failed to add comment');
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}/comments/${commentId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.status === 204) {
+        await fetchArticle();
+      } else {
+        const errData = await response.json();
+        setError(errData.error || 'Failed to delete comment');
+      }
+    } catch (e) {
+      setError(e.message || 'Failed to delete comment');
+    }
+  };
+
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
   const formatFileSize = (bytes) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const getFileIcon = (mimetype) => {
     if (mimetype.startsWith('image/')) return '🖼️';
     if (mimetype === 'application/pdf') return '📄';
+    return '📎';
   };
 
-  if (loading) return <div className="container loading">Loading article...</div>;
-  if (error && !article) return <div className="container error">Error: {error}</div>;
-  if (!article) return <div className="container">Article not found</div>;
+  if (loading) {
+    return (
+      <div className="container">
+        <p className="loading">Loading article...</p>
+      </div>
+    );
+  }
+
+  if (error && !article) {
+    return (
+      <div className="container">
+        <div className="error">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!article) {
+    return (
+      <div className="container">
+        <p>Article not found</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container article-view">
+      <Link to="/articles" className="back-link">
+        ← Back to article list
+      </Link>
+
       <h1>{article.title}</h1>
+
+      <div>
+        <span
+          className={`workspace-badge workspace-${article.workspace}`}
+        >
+          {article.workspace}
+        </span>
+        <span className='date'>
+          Created: {formatDate(article.createdAt)}
+        </span>
+      </div>
 
       {article.attachments && article.attachments.length > 0 && (
         <div className="attachments-section">
           <h3>Attachments ({article.attachments.length})</h3>
           <div className="attachments-list">
-            {article.attachments.map(attachment => (
+            {article.attachments.map((attachment) => (
               <div key={attachment.id} className="attachment-item">
-                <a 
+                <a
                   href={`http://localhost:3001/uploads/${attachment.filename}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="attachment-link"
                 >
-                  <span className="attachment-icon">{getFileIcon(attachment.mimetype)}</span>
-                  <span className="attachment-name">{attachment.originalName}</span>
-                  <span className="attachment-size">({formatFileSize(attachment.size)})</span>
+                  <span className="attachment-icon">
+                    {getFileIcon(attachment.mimetype)}
+                  </span>
+                  <span className="attachment-name">
+                    {attachment.originalName}
+                  </span>
+                  <span className="attachment-size">
+                    {formatFileSize(attachment.size)}
+                  </span>
                 </a>
-                <button 
+                <button
                   className="attachment-delete-btn"
                   onClick={() => handleDeleteAttachment(attachment.id)}
                   title="Delete attachment"
@@ -166,31 +296,96 @@ function ArticleView() {
 
       <div className="upload-section">
         <label className="upload-label">
-          <input 
-            type="file" 
+          <input
+            type="file"
             accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,application/pdf"
             onChange={handleFileUpload}
             disabled={uploading}
             className="upload-input"
           />
           <span className="upload-button">
-            {uploading ? '⏳ Uploading...' : 'Attach File'}
+            {uploading ? 'Uploading...' : 'Attach File'}
           </span>
         </label>
-        <span className="upload-hint">Images (JPG, PNG, GIF, WEBP) and PDF only, max 10MB</span>
+        <span className="upload-hint">
+          Images (JPG, PNG, GIF, WEBP) and PDF only, max 10MB
+        </span>
       </div>
 
-      {error && <div className="error" style={{ marginTop: '1rem' }}>{error}</div>}
+      {error && (
+        <div className="error">
+          {error}
+        </div>
+      )}
 
-      <div className="content" dangerouslySetInnerHTML={{ __html: article.content }} />
+      <div
+        className="content"
+        dangerouslySetInnerHTML={{ __html: article.content }}
+      />
 
-      <div style={{ marginTop: '2rem' }}>
+      <div>
         <button className="article-action-btn" onClick={handleDelete}>
           Delete Article
         </button>
-        <Link className="article-action-link" to={`/articles/${id}/edit`}>
+        <Link
+          className="article-action-link"
+          to={`/articles/${id}/edit`}
+        >
           Edit Article
         </Link>
+      </div>
+
+      <div className="comments-section">
+        <h2>Comments ({article.comments ? article.comments.length : 0})</h2>
+
+        <form className="comment-form" onSubmit={handleCommentSubmit}>
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Your name"
+              value={commentAuthor}
+              onChange={(e) => setCommentAuthor(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <textarea
+              rows="3"
+              placeholder="Your comment..."
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submittingComment}
+          >
+            {submittingComment ? 'Adding comment...' : 'Add Comment'}
+          </button>
+        </form>
+
+        <div className="comments-list">
+          {article.comments &&
+            article.comments.map((comment) => (
+              <div key={comment.id} className="comment-item">
+                <div className="comment-header">
+                  <strong>{comment.author}</strong>
+                  <span className="comment-date">
+                    {formatDate(comment.createdAt)}
+                  </span>
+                </div>
+                <div className="comment-content">
+                  {comment.content}
+                </div>
+                <button
+                  className="btn-delete-comment"
+                  onClick={() => handleDeleteComment(comment.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

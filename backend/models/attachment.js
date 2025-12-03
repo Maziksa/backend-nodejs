@@ -34,7 +34,6 @@ export default (sequelize, DataTypes) => {
   }, {
     tableName: 'attachments',
     timestamps: true,
-    underscored: false,
     createdAt: 'uploadedAt',
     updatedAt: false
   });
