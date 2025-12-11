@@ -3,6 +3,7 @@ import { CONFIG } from '../config/constants.js';
 import ArticleModel from './article.js';
 import AttachmentModel from './attachment.js';
 import CommentModel from './comment.js';
+import ArticleVersionModel from './articleVersion.js';
 
 const sequelize = new Sequelize(
   CONFIG.DB_NAME,
@@ -25,6 +26,7 @@ const sequelize = new Sequelize(
 const Article = ArticleModel(sequelize, Sequelize.DataTypes);
 const Attachment = AttachmentModel(sequelize, Sequelize.DataTypes);
 const Comment = CommentModel(sequelize, Sequelize.DataTypes);
+const ArticleVersion = ArticleVersionModel(sequelize, Sequelize.DataTypes);
 
 // Relations
 Article.hasMany(Attachment, {
@@ -49,12 +51,24 @@ Comment.belongsTo(Article, {
   as: 'article'
 });
 
+Article.hasMany(ArticleVersion, {
+  foreignKey: 'articleId',
+  as: 'versions',
+  onDelete: 'CASCADE'
+});
+
+ArticleVersion.belongsTo(Article, {
+  foreignKey: 'articleId',
+  as: 'article'
+});
+
 export const db = {
   sequelize,
   Sequelize,
   Article,
   Attachment,
-  Comment
+  Comment,
+  ArticleVersion
 };
 
 export default db;

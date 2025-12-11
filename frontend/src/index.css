@@ -534,3 +534,142 @@ nav a:hover {
 .back-link:hover {
   text-decoration: underline;
 }
+
+.article-view-container {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  align-items: flex-start;
+}
+
+.article-main-column {
+  flex: 3;
+  min-width: 0;
+}
+
+.article-history-column {
+  flex: 1;
+  min-width: 250px;
+}
+
+.version-warning {
+  background-color: #fff3e0;
+  border: 1px solid #ffb74d;
+  color: #e65100;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-switch-version {
+  background: none;
+  border: none;
+  color: #0277bd;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0;
+}
+
+.btn-switch-version:hover {
+  color: #01579b;
+}
+
+.history-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 20px;
+}
+
+.history-title {
+  margin-top: 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-btn {
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.history-btn:hover {
+  border-color: #999;
+  background-color: #f9f9f9;
+}
+
+.history-btn.is-current {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.history-btn.is-selected {
+  background-color: #fff3e0;
+  border-color: #ff9800;
+}
+
+.history-btn-header {
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.history-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.badge-current {
+  font-size: 0.7rem;
+  background: #2196f3;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-empty {
+  color: #888;
+  font-style: italic;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.attachments-readonly {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #ccc;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}

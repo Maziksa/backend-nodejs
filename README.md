@@ -80,6 +80,12 @@ The application will be available at `http://localhost:5173`.
 Articles can be organized by workspace: `personal`, `university`, `work`.
 Filter available in article list.
 
+## Article Versioning
+- Every update to an article creates a new immutable version.
+- Users can view the full history of changes.
+- Old versions are available in read-only mode via the UI sidebar.
+- Workspace changes are also tracked in history.
+
 ## API Endpoints
 
 | Method | Endpoint | Description |

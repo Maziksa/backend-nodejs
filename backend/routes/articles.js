@@ -30,16 +30,40 @@ export function createArticlesRouter(io) {
     }
   });
 
+  router.get('/:id/history', validateId, async (req, res) => {
+    try {
+      const history = await articleService.getArticleHistory(req.params.id);
+      res.json(history);
+    } catch (err) {
+      console.error('Error reading history:', err);
+      res.status(500).json({ error: 'Failed to read history' });
+    }
+  });
+
+  router.get('/:id/version/:version', validateId, async (req, res) => {
+    try {
+      const versionData = await articleService.getArticleVersion(
+        req.params.id,
+        req.params.version
+      );
+      res.json(versionData);
+    } catch (err) {
+      if (err.code === 'NOT_FOUND') {
+        return res.status(404).json({ error: err.message });
+      }
+      console.error('Error reading version:', err);
+      res.status(500).json({ error: 'Failed to read version' });
+    }
+  });
+
   router.post('/', async (req, res) => {
     try {
       const article = await articleService.createArticle(req.body);
-
       io.emit('article-created', {
         id: article.id,
         title: article.title,
         workspace: article.workspace
       });
-
       res.status(201).json(article);
     } catch (err) {
       if (err.code === 'VALIDATION_ERROR') {
@@ -56,13 +80,14 @@ export function createArticlesRouter(io) {
         req.params.id,
         req.body
       );
-
+      
       io.emit('article-updated', {
         id: article.id,
         title: article.title,
-        workspace: article.workspace
+        workspace: article.workspace,
+        version: article.version 
       });
-
+      
       res.json(article);
     } catch (err) {
       if (err.code === 'NOT_FOUND') {
@@ -79,7 +104,7 @@ export function createArticlesRouter(io) {
   router.delete('/:id', validateId, async (req, res) => {
     try {
       const attachments = await articleService.deleteArticle(req.params.id);
-
+      
       if (attachments && attachments.length > 0) {
         await Promise.all(
           attachments.map(async (attachment) =>

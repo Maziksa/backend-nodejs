@@ -26,6 +26,11 @@ export default (sequelize, DataTypes) => {
       validate: {
         isIn: [['personal', 'university', 'work']]
       }
+    },
+    version: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
     }
   }, {
     tableName: 'articles',

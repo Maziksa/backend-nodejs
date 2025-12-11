@@ -1,13 +1,13 @@
 import { db } from '../models/index.js';
 
-const { Article, Attachment, Comment } = db;
+const { Article, Attachment, Comment, ArticleVersion } = db;
 
 export async function getAllArticles(workspace = null) {
   const whereClause = workspace ? { workspace } : {};
-
+  
   return Article.findAll({
     where: whereClause,
-    attributes: ['id', 'title', 'workspace', 'createdAt', 'updatedAt'],
+    attributes: ['id', 'title', 'workspace', 'version', 'createdAt', 'updatedAt'],
     order: [['createdAt', 'DESC']]
   });
 }
@@ -70,7 +70,8 @@ export async function createArticle(data) {
   return Article.create({
     title: title.trim(),
     content: content.trim(),
-    workspace
+    workspace,
+    version: 1
   });
 }
 
@@ -99,21 +100,38 @@ export async function updateArticle(id, data) {
   }
 
   const article = await Article.findByPk(id);
-
   if (!article) {
     const error = new Error('Article not found');
     error.code = 'NOT_FOUND';
     throw error;
   }
 
-  article.title = title.trim();
-  article.content = content.trim();
-  if (workspace) {
-    article.workspace = workspace;
-  }
+  const transaction = await db.sequelize.transaction();
 
-  await article.save();
-  return article;
+  try {
+    await ArticleVersion.create({
+      articleId: article.id,
+      version: article.version,
+      title: article.title,
+      content: article.content,
+      workspace: article.workspace
+    }, { transaction });
+
+    article.title = title.trim();
+    article.content = content.trim();
+    if (workspace) {
+      article.workspace = workspace;
+    }
+    article.version = article.version + 1;
+
+    await article.save({ transaction });
+    await transaction.commit();
+
+    return article;
+  } catch (err) {
+    await transaction.rollback();
+    throw err;
+  }
 }
 
 export async function deleteArticle(id) {
@@ -136,4 +154,29 @@ export async function deleteArticle(id) {
   await article.destroy();
 
   return attachments;
+}
+
+export async function getArticleHistory(id) {
+  return ArticleVersion.findAll({
+    where: { articleId: id },
+    attributes: ['id', 'version', 'createdAt'],
+    order: [['version', 'DESC']]
+  });
+}
+
+export async function getArticleVersion(articleId, version) {
+  const archived = await ArticleVersion.findOne({
+    where: { articleId, version }
+  });
+
+  if (archived) return archived;
+
+  const current = await Article.findByPk(articleId);
+  if (current && current.version == version) {
+    return current;
+  }
+
+  const error = new Error('Version not found');
+  error.code = 'NOT_FOUND';
+  throw error;
 }
