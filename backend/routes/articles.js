@@ -1,12 +1,13 @@
 import express from 'express';
 import { validateId } from '../middleware/validation.js';
+import { verifyToken } from '../middleware/auth.js';
 import * as articleService from '../services/articleService.js';
 import * as fileService from '../services/fileService.js';
 
 export function createArticlesRouter(io) {
   const router = express.Router();
 
-  router.get('/', async (req, res) => {
+  router.get('/', verifyToken, async (req, res) => {
     try {
       const { workspace } = req.query;
       const articles = await articleService.getAllArticles(workspace);
@@ -17,7 +18,7 @@ export function createArticlesRouter(io) {
     }
   });
 
-  router.get('/:id', validateId, async (req, res) => {
+  router.get('/:id', verifyToken, validateId, async (req, res) => {
     try {
       const article = await articleService.getArticleById(req.params.id);
       res.json(article);
@@ -30,7 +31,7 @@ export function createArticlesRouter(io) {
     }
   });
 
-  router.get('/:id/history', validateId, async (req, res) => {
+  router.get('/:id/history', verifyToken, validateId, async (req, res) => {
     try {
       const history = await articleService.getArticleHistory(req.params.id);
       res.json(history);
@@ -40,7 +41,7 @@ export function createArticlesRouter(io) {
     }
   });
 
-  router.get('/:id/version/:version', validateId, async (req, res) => {
+  router.get('/:id/version/:version', verifyToken, validateId, async (req, res) => {
     try {
       const versionData = await articleService.getArticleVersion(
         req.params.id,
@@ -56,7 +57,7 @@ export function createArticlesRouter(io) {
     }
   });
 
-  router.post('/', async (req, res) => {
+  router.post('/', verifyToken, async (req, res) => {
     try {
       const article = await articleService.createArticle(req.body);
       io.emit('article-created', {
@@ -74,20 +75,18 @@ export function createArticlesRouter(io) {
     }
   });
 
-  router.put('/:id', validateId, async (req, res) => {
+  router.put('/:id', validateId, verifyToken, async (req, res) => {
     try {
       const article = await articleService.updateArticle(
         req.params.id,
         req.body
       );
-      
       io.emit('article-updated', {
         id: article.id,
         title: article.title,
         workspace: article.workspace,
-        version: article.version 
+        version: article.version
       });
-      
       res.json(article);
     } catch (err) {
       if (err.code === 'NOT_FOUND') {
@@ -101,10 +100,9 @@ export function createArticlesRouter(io) {
     }
   });
 
-  router.delete('/:id', validateId, async (req, res) => {
+  router.delete('/:id', validateId, verifyToken, async (req, res) => {
     try {
       const attachments = await articleService.deleteArticle(req.params.id);
-      
       if (attachments && attachments.length > 0) {
         await Promise.all(
           attachments.map(async (attachment) =>
@@ -112,7 +110,6 @@ export function createArticlesRouter(io) {
           )
         );
       }
-
       io.emit('article-deleted', { id: req.params.id });
       res.status(204).send();
     } catch (err) {

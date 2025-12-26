@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useApiClient } from '../api/client';
 
 const API_URL = 'http://localhost:3001/api';
 
@@ -8,6 +9,7 @@ function ArticleList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [workspace, setWorkspace] = useState('');
+  const { apiCall } = useApiClient();
 
   const workspaces = [
     { value: '', label: 'All Workspaces' },
@@ -29,7 +31,7 @@ function ArticleList() {
         ? `${API_URL}/articles?workspace=${workspace}`
         : `${API_URL}/articles`;
 
-      const response = await fetch(url);
+      const response = await apiCall(url);
 
       if (!response.ok) {
         setError('Failed to load articles');
@@ -90,7 +92,7 @@ function ArticleList() {
           ))}
         </select>
 
-        <Link to="/articles/create" className="btn btn-primary">
+        <Link to="/articles/new" className="btn btn-primary">
           Create New Article
         </Link>
       </div>
@@ -102,7 +104,7 @@ function ArticleList() {
             {workspace && ` in ${getWorkspaceLabel(workspace)}`}.
           </p>
           <p>
-            <Link to="/articles/create" className="btn btn-primary">
+            <Link to="/articles/new" className="btn btn-primary">
               Create your first article
             </Link>
           </p>

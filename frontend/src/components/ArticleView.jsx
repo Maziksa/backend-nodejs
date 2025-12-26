@@ -1,31 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
+import { useApiClient } from '../api/client';
 
 const API_URL = 'http://localhost:3001/api';
 
 function ArticleView() {
   const { id } = useParams();
-  
+
   const [article, setArticle] = useState(null);
   const [history, setHistory] = useState([]);
   const [selectedVersion, setSelectedVersion] = useState(null);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [uploading, setUploading] = useState(false);
   const [commentAuthor, setCommentAuthor] = useState('');
   const [commentContent, setCommentContent] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
-  
+
   const navigate = useNavigate();
+  const { apiCall } = useApiClient();
 
   const fetchArticle = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_URL}/articles/${id}`);
+      const response = await apiCall(`${API_URL}/articles/${id}`);
       if (!response.ok) {
         if (response.status === 404) {
           setError('Article not found.');
@@ -46,7 +48,7 @@ function ArticleView() {
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch(`${API_URL}/articles/${id}/history`);
+      const response = await apiCall(`${API_URL}/articles/${id}/history`);
       if (response.ok) {
         const data = await response.json();
         setHistory(data);
@@ -64,7 +66,7 @@ function ArticleView() {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/articles/${id}/version/${versionNumber}`);
+      const response = await apiCall(`${API_URL}/articles/${id}/version/${versionNumber}`);
       if (response.ok) {
         const data = await response.json();
         setSelectedVersion(data);
@@ -84,13 +86,8 @@ function ArticleView() {
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this article?')) return;
     try {
-      const response = await fetch(`${API_URL}/articles/${id}`, { method: 'DELETE' });
-      if (response.status === 204) {
-        navigate('/articles');
-      } else {
-        const errData = await response.json();
-        setError(errData.error || 'Error deleting article');
-      }
+      await apiCall(`${API_URL}/articles/${id}`, { method: 'DELETE' });
+      navigate('/articles');
     } catch (e) {
       setError(e.message || 'Failed to delete article');
     }
@@ -120,11 +117,11 @@ function ArticleView() {
     try {
       setUploading(true);
       setError(null);
-      const response = await fetch(`${API_URL}/articles/${id}/attachments`, {
+      await apiCall(`${API_URL}/articles/${id}/attachments`, {
         method: 'POST',
+        headers: {},
         body: formData
       });
-      if (!response.ok) throw new Error('Failed to upload');
       await fetchArticle();
       e.target.value = '';
     } catch (e) {
@@ -137,8 +134,8 @@ function ArticleView() {
   const handleDeleteAttachment = async (attachmentId) => {
     if (!window.confirm('Delete attachment?')) return;
     try {
-      const response = await fetch(`${API_URL}/articles/${id}/attachments/${attachmentId}`, { method: 'DELETE' });
-      if (response.status === 204) await fetchArticle();
+      await apiCall(`${API_URL}/articles/${id}/attachments/${attachmentId}`, { method: 'DELETE' });
+      await fetchArticle();
     } catch (e) {
       setError('Failed to delete attachment');
     }
@@ -150,16 +147,13 @@ function ArticleView() {
 
     setSubmittingComment(true);
     try {
-      const response = await fetch(`${API_URL}/articles/${id}/comments`, {
+      await apiCall(`${API_URL}/articles/${id}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ author: commentAuthor, content: commentContent })
       });
-      if (response.ok) {
-        setCommentAuthor('');
-        setCommentContent('');
-        await fetchArticle();
-      }
+      setCommentAuthor('');
+      setCommentContent('');
+      await fetchArticle();
     } catch (e) {
       setError('Failed to post comment');
     } finally {
@@ -170,8 +164,8 @@ function ArticleView() {
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm('Delete comment?')) return;
     try {
-      const response = await fetch(`${API_URL}/comments/${commentId}`, { method: 'DELETE' });
-      if (response.status === 204) await fetchArticle();
+      await apiCall(`${API_URL}/comments/${commentId}`, { method: 'DELETE' });
+      await fetchArticle();
     } catch (e) {
       setError('Failed to delete comment');
     }

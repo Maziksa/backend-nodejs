@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useApiClient } from '../api/client';
 
 const API_URL = 'http://localhost:3001/api';
 
@@ -15,6 +16,7 @@ function ArticleEditor({ isEditMode }) {
   const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const { apiCall } = useApiClient();
 
   const workspaces = [
     { value: 'personal', label: 'Personal' },
@@ -27,7 +29,7 @@ function ArticleEditor({ isEditMode }) {
       async function fetchArticle() {
         try {
           setLoading(true);
-          const response = await fetch(`${API_URL}/articles/${id}`);
+          const response = await apiCall(`${API_URL}/articles/${id}`);
 
           if (!response.ok) {
             setError('Article not found or server error.');
@@ -62,31 +64,15 @@ function ArticleEditor({ isEditMode }) {
     setError(null);
 
     try {
-      let response;
       const payload = { title, content, workspace };
 
-      if (isEditMode) {
-        response = await fetch(`${API_URL}/articles/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+      const response = await apiCall(
+        isEditMode ? `${API_URL}/articles/${id}` : `${API_URL}/articles`,
+        {
+          method: isEditMode ? 'PUT' : 'POST',
           body: JSON.stringify(payload)
-        });
-      } else {
-        response = await fetch(`${API_URL}/articles`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      }
-
-      if (!response.ok) {
-        const errData = await response.json();
-        setError(
-          errData.error || (isEditMode ? 'Update failed' : 'Create failed')
-        );
-        setSubmitting(false);
-        return;
-      }
+        }
+      );
 
       const article = await response.json();
       navigate(`/articles/${isEditMode ? id : article.id}`);

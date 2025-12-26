@@ -3,12 +3,14 @@ import { validateId, validateAttachmentId } from '../middleware/validation.js';
 import { upload, handleUploadError } from '../middleware/upload.js';
 import * as attachmentService from '../services/attachmentService.js';
 import * as fileService from '../services/fileService.js';
+import { verifyToken } from '../middleware/auth.js';
 
 export function createAttachmentsRouter(io) {
   const router = express.Router({ mergeParams: true });
 
   router.post(
     '/',
+    verifyToken,
     validateId,
     (req, res, next) => {
       upload.single('file')(req, res, (err) => {
@@ -57,6 +59,7 @@ export function createAttachmentsRouter(io) {
 
   router.delete(
     '/:attachmentId',
+    verifyToken,
     validateId,
     validateAttachmentId,
     async (req, res) => {
