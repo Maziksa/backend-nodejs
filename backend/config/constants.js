@@ -21,6 +21,9 @@ export const CONFIG = {
 
 	UPLOAD_DIR: path.join(PROJECT_ROOT, 'uploads'),
 
+	MIN_PASSWORD_LENGTH: 6,
+	MAX_PASSWORD_LENGTH: 255,
+
 	MAX_FILE_SIZE: 10 * 1024 * 1024,
 	ALLOWED_MIME_TYPES: [
 		'image/jpeg',

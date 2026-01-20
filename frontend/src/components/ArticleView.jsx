@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
 import { useApiClient } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = 'http://localhost:3001/api';
 
 function ArticleView() {
   const { id } = useParams();
+  const { user, isAdmin } = useAuth();
 
   const [article, setArticle] = useState(null);
   const [history, setHistory] = useState([]);
@@ -224,7 +226,7 @@ function ArticleView() {
               </span>
             </div>
 
-            {!isHistoryMode && (
+            {!isHistoryMode && (user?.id === article?.userId || isAdmin) && (
               <div className="article-actions" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                 <Link to={`/articles/${id}/edit`} className="btn btn-primary" style={{ marginRight: '1rem' }}>
                   Edit Article

@@ -3,6 +3,9 @@ import { validateId } from '../middleware/validation.js';
 import { verifyToken } from '../middleware/auth.js';
 import * as articleService from '../services/articleService.js';
 import * as fileService from '../services/fileService.js';
+import { db } from '../models/index.js';
+
+const { Article } = db;
 
 export function createArticlesRouter(io) {
   const router = express.Router();
@@ -59,7 +62,7 @@ export function createArticlesRouter(io) {
 
   router.post('/', verifyToken, async (req, res) => {
     try {
-      const article = await articleService.createArticle(req.body);
+      const article = await articleService.createArticle(req.body, req.user.id);
       io.emit('article-created', {
         id: article.id,
         title: article.title,
@@ -77,6 +80,13 @@ export function createArticlesRouter(io) {
 
   router.put('/:id', validateId, verifyToken, async (req, res) => {
     try {
+      const existingArticle = await Article.findByPk(req.params.id);
+      if (!existingArticle) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+      if (existingArticle.userId !== req.user.id && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Permission denied' });
+      }
       const article = await articleService.updateArticle(
         req.params.id,
         req.body
@@ -102,6 +112,13 @@ export function createArticlesRouter(io) {
 
   router.delete('/:id', validateId, verifyToken, async (req, res) => {
     try {
+      const existingArticle = await Article.findByPk(req.params.id);
+      if (!existingArticle) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+      if (existingArticle.userId !== req.user.id && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Permission denied' });
+      }
       const attachments = await articleService.deleteArticle(req.params.id);
       if (attachments && attachments.length > 0) {
         await Promise.all(

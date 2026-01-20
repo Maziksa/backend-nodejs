@@ -14,6 +14,7 @@ export async function getAllArticles(workspace = null) {
 
 export async function getArticleById(id) {
   const article = await Article.findByPk(id, {
+    attributes: ['id', 'title', 'content', 'workspace', 'version', 'createdAt', 'updatedAt', 'userId'],
     include: [
       {
         model: Attachment,
@@ -45,7 +46,7 @@ export async function getArticleById(id) {
   return article;
 }
 
-export async function createArticle(data) {
+export async function createArticle(data, userId) {
   const { title, content, workspace = 'personal' } = data;
 
   if (!title || !content) {
@@ -71,7 +72,8 @@ export async function createArticle(data) {
     title: title.trim(),
     content: content.trim(),
     workspace,
-    version: 1
+    version: 1,
+    userId
   });
 }
 

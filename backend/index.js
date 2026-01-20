@@ -7,6 +7,7 @@ import { createArticlesRouter } from './routes/articles.js';
 import { createAttachmentsRouter } from './routes/attachments.js';
 import { createAuthRouter } from './routes/auth.js';
 import { createCommentsRouter } from './routes/comments.js';
+import { createUsersRouter } from './routes/users.js';
 import { setupSocketHandlers } from './sockets/socketHandler.js';
 import { ensureDir } from './services/fileService.js';
 import { db } from './models/index.js';
@@ -30,6 +31,7 @@ app.use('/api/auth', createAuthRouter());
 app.use('/api/articles', createArticlesRouter(io));
 app.use('/api/articles/:id/attachments', createAttachmentsRouter(io));
 app.use('/api', createCommentsRouter(io));
+app.use('/api/users', createUsersRouter());
 
 setupSocketHandlers(io);
 

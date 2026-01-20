@@ -64,6 +64,17 @@ ArticleVersion.belongsTo(Article, {
   as: 'article'
 });
 
+User.hasMany(Article, {
+  foreignKey: 'userId',
+  as: 'articles',
+  onDelete: 'CASCADE'
+});
+
+Article.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'author'
+});
+
 export const db = {
   sequelize,
   Sequelize,

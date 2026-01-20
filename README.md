@@ -70,7 +70,10 @@ The application will be available at `http://localhost:5173`.
 
 ## Core Features
 
-- Create, read, update, and delete articles.
+- Register and login with email/password.
+- Users have roles (admin/user).
+- Create, read, update, and delete articles with permissions (only creator or admin can edit/delete).
+- Admins can view all users and manage their roles.
 - Store articles in PostgreSQL via Sequelize models and migrations.
 - Upload and remove file attachments linked to articles.
 - Receive real‑time notifications about article and attachment changes via WebSockets.
@@ -86,16 +89,38 @@ Filter available in article list.
 - Old versions are available in read-only mode via the UI sidebar.
 - Workspace changes are also tracked in history.
 
+## Role-Based Access Control (RBAC)
+- `admin` and `user`. First registered user automatically becomes admin.
+- Only the article creator or an admin can edit or delete articles.
+- Admins can access User Management page to view and modify user roles.
+- Backend enforces permissions on all endpoints requiring authorization.
+
+**Note**: To create an admin user, simply register as the first user in the application. Subsequent registrations will create regular users.
+
 ## API Endpoints
 
+### Authentication
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/articles` | List articles |
-| POST | `/api/articles` | Create article |
-| GET | `/api/articles/:id` | Get article |
-| PUT | `/api/articles/:id` | Update article |
-| DELETE | `/api/articles/:id` | Delete article |
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login user |
+| GET | `/api/auth/me` | Get current user info |
+
+### Articles
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/articles` | List articles (authenticated) |
+| POST | `/api/articles` | Create article (authenticated) |
+| GET | `/api/articles/:id` | Get article (authenticated) |
+| PUT | `/api/articles/:id` | Update article (creator or admin only) |
+| DELETE | `/api/articles/:id` | Delete article (creator or admin only) |
 | POST | `/api/articles/:id/attachments` | Upload attachment |
 | DELETE | `/api/articles/:id/attachments/:attachmentId` | Delete attachment |
 | POST | `/api/articles/:id/comments` | Add comment |
 | DELETE | `/api/comments/:id` | Delete comment |
+
+### User Management (Admin Only)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/users` | List all users (admin) |
+| PUT | `/api/users/:id/role` | Update user role (admin) |

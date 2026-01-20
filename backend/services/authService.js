@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { db } from '../models/index.js';
+import { CONFIG } from '../config/constants.js';
 
 const { User } = db;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -21,8 +22,8 @@ export async function registerUser(data) {
     throw error;
   }
 
-  if (password.trim().length < 6) {
-    const error = new Error('Password must be at least 6 characters');
+  if (password.trim().length < CONFIG.MIN_PASSWORD_LENGTH) {
+    const error = new Error(`Password must be at least ${CONFIG.MIN_PASSWORD_LENGTH} characters`);
     error.code = 'VALIDATION_ERROR';
     throw error;
   }
@@ -41,9 +42,14 @@ export async function registerUser(data) {
     throw error;
   }
 
+  // First user becomes admin
+  const userCount = await User.count();
+  const role = userCount === 0 ? 'admin' : 'user';
+
   const user = await User.create({
     email: email.trim().toLowerCase(),
-    password: password.trim()
+    password: password.trim(),
+    role
   });
 
   return {
@@ -76,7 +82,7 @@ export async function loginUser(data) {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email },
+    { id: user.id, email: user.email, role: user.role },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRY }
   );
@@ -85,14 +91,15 @@ export async function loginUser(data) {
     token,
     user: {
       id: user.id,
-      email: user.email
+      email: user.email,
+      role: user.role
     }
   };
 }
 
 export async function getCurrentUser(userId) {
   const user = await User.findByPk(userId, {
-    attributes: ['id', 'email', 'createdAt']
+    attributes: ['id', 'email', 'role', 'createdAt']
   });
 
   if (!user) {

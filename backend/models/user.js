@@ -1,3 +1,5 @@
+import { CONFIG } from '../config/constants.js';
+
 export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
@@ -19,8 +21,13 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: true,
-        len: [6, 255]
+        len: [CONFIG.MIN_PASSWORD_LENGTH, CONFIG.MAX_PASSWORD_LENGTH]
       }
+    },
+    role: {
+      type: DataTypes.ENUM('admin', 'user'),
+      allowNull: false,
+      defaultValue: 'user'
     }
   }, {
     tableName: 'users',
