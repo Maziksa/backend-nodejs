@@ -55,12 +55,12 @@ nav a:hover {
   margin-bottom: 0.5rem;
 }
 
-.article-list a {
+.article-list ul a {
   font-size: 1.2rem;
   text-decoration: none;
 }
 
-.article-list a:hover {
+.article-list ul a:hover {
   text-decoration: underline;
 }
 
@@ -483,6 +483,23 @@ nav a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007aff;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
 }
 
 .btn {

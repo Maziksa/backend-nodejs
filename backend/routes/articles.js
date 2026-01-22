@@ -12,8 +12,8 @@ export function createArticlesRouter(io) {
 
   router.get('/', verifyToken, async (req, res) => {
     try {
-      const { workspace } = req.query;
-      const articles = await articleService.getAllArticles(workspace);
+      const { workspace, search } = req.query;
+      const articles = await articleService.getAllArticles(workspace, search);
       res.json(articles);
     } catch (err) {
       console.error('Error reading articles:', err);

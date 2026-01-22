@@ -1,10 +1,22 @@
 import { db } from '../models/index.js';
+import { Op } from 'sequelize';
 
 const { Article, Attachment, Comment, ArticleVersion } = db;
 
-export async function getAllArticles(workspace = null) {
-  const whereClause = workspace ? { workspace } : {};
-  
+export async function getAllArticles(workspace = null, search = null) {
+  const whereClause = {};
+
+  if (workspace) {
+    whereClause.workspace = workspace;
+  }
+
+  if (search) {
+    whereClause[Op.or] = [
+      { title: { [Op.iLike]: `%${search}%` } },
+      { content: { [Op.iLike]: `%${search}%` } }
+    ];
+  }
+
   return Article.findAll({
     where: whereClause,
     attributes: ['id', 'title', 'workspace', 'version', 'createdAt', 'updatedAt'],

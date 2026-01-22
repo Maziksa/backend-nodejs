@@ -77,11 +77,18 @@ The application will be available at `http://localhost:5173`.
 - Store articles in PostgreSQL via Sequelize models and migrations.
 - Upload and remove file attachments linked to articles.
 - Receive real‑time notifications about article and attachment changes via WebSockets.
+- Search articles by title or content (case-insensitive) via search input in the article list.
 
 ## Workspaces
 
 Articles can be organized by workspace: `personal`, `university`, `work`.
 Filter available in article list.
+
+## Search
+
+Users can search for articles by entering text in the search input field on the article list page.
+- Search matches articles where the title or content contains the search text (case-insensitive).
+- Search integrates with workspace filtering.
 
 ## Article Versioning
 - Every update to an article creates a new immutable version.
@@ -109,7 +116,7 @@ Filter available in article list.
 ### Articles
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/articles` | List articles (authenticated) |
+| GET | `/api/articles` | List articles (authenticated); supports `?workspace=<value>&search=<text>` query params |
 | POST | `/api/articles` | Create article (authenticated) |
 | GET | `/api/articles/:id` | Get article (authenticated) |
 | PUT | `/api/articles/:id` | Update article (creator or admin only) |

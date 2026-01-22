@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useApiClient } from '../api/client';
 
@@ -9,6 +9,8 @@ function ArticleList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [workspace, setWorkspace] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const { apiCall } = useApiClient();
 
   const workspaces = [
@@ -20,16 +22,22 @@ function ArticleList() {
 
   useEffect(() => {
     fetchArticles();
-  }, [workspace]);
+  }, [workspace, activeSearchTerm]);
 
   const fetchArticles = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const url = workspace
-        ? `${API_URL}/articles?workspace=${workspace}`
-        : `${API_URL}/articles`;
+      let url = `${API_URL}/articles`;
+      const params = new URLSearchParams();
+
+      if (workspace) params.append('workspace', workspace);
+      if (activeSearchTerm) params.append('search', activeSearchTerm);
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
 
       const response = await apiCall(url);
 
@@ -56,6 +64,12 @@ function ArticleList() {
       minute: '2-digit'
     });
 
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      setActiveSearchTerm(searchTerm);
+    }
+  };
+
   const getWorkspaceLabel = (ws) => {
     const found = workspaces.find((w) => w.value === ws);
     return found ? found.label : ws;
@@ -80,6 +94,18 @@ function ArticleList() {
   return (
     <div className="container article-list">
       <div className="header-actions">
+        <input
+          type="text"
+          placeholder="Search articles..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleSearchKeyDown}
+          className="search-input"
+        />
+        <button onClick={() => setActiveSearchTerm(searchTerm)} className="btn btn-secondary">
+          Search
+        </button>
+
         <select
           className="workspace-filter"
           value={workspace}
@@ -101,6 +127,7 @@ function ArticleList() {
         <div>
           <p>
             No articles found
+            {activeSearchTerm && ` matching "${activeSearchTerm}"`}
             {workspace && ` in ${getWorkspaceLabel(workspace)}`}.
           </p>
           <p>
