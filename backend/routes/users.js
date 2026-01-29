@@ -1,4 +1,5 @@
 import express from 'express';
+import { ROLE_VALUES } from '../config/roles.js';
 import { validateId } from '../middleware/validation.js';
 import { verifyToken, requireAdmin } from '../middleware/auth.js';
 import { db } from '../models/index.js';
@@ -20,24 +21,30 @@ export function createUsersRouter() {
     }
   });
 
-  router.put('/:id/role', validateId, verifyToken, requireAdmin, async (req, res) => {
-    try {
-      const { role } = req.body;
-      if (!role || !['admin', 'user'].includes(role)) {
-        return res.status(400).json({ error: 'Invalid role' });
-      }
-      const user = await User.findByPk(req.params.id);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      user.role = role;
-      await user.save();
-      res.json({ id: user.id, email: user.email, role: user.role });
-    } catch (err) {
-      console.error('Error updating user role:', err);
-      res.status(500).json({ error: 'Failed to update user role' });
-    }
-  });
+  router.put(
+    '/:id/role',
+    validateId,
+    verifyToken,
+    requireAdmin,
+    async (req, res) => {
+      try {
+        const { role } = req.body;
+        if (!role || !ROLE_VALUES.includes(role)) {
+          return res.status(400).json({ error: 'Invalid role' });
+        }
+        const user = await User.findByPk(req.params.id)
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        };
+        user.role = role;
+        await user.save();
+        res.json({ id: user.id, email: user.email, role: user.role });
+      } catch (err) {
+        console.error('Error updating user role:', err);
+        res.status(500).json({ error: 'Failed to update user role' });
+			}
+		}
+  );
 
   return router;
 }

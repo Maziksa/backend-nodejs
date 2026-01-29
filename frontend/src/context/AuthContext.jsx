@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { ROLES } from '../constants/roles';
 
 export const AuthContext = createContext();
 
@@ -113,7 +114,7 @@ export function AuthProvider({ children }) {
     logout,
     getAuthToken,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin'
+    isAdmin: user?.role === ROLES.ADMIN,
   };
 
   return (

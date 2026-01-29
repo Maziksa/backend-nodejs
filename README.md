@@ -37,7 +37,7 @@ npm install
 ### 3. Create database (if not created yet):
 
 ```
-npm run db:create;
+npm run db:create
 ```
 
 ### 4. Run migrations:
@@ -61,6 +61,7 @@ The API will be available at `http://localhost:3001/api`.
 
 ```
 cd frontend
+npm install
 npm run dev
 ```
 
@@ -76,6 +77,7 @@ The application will be available at `http://localhost:5173`.
 - Admins can view all users and manage their roles.
 - Store articles in PostgreSQL via Sequelize models and migrations.
 - Upload and remove file attachments linked to articles.
+- Export an article as a PDF file (server-side generation).
 - Receive real‑time notifications about article and attachment changes via WebSockets.
 - Search articles by title or content (case-insensitive) via search input in the article list.
 
@@ -119,6 +121,7 @@ Users can search for articles by entering text in the search input field on the 
 | GET | `/api/articles` | List articles (authenticated); supports `?workspace=<value>&search=<text>` query params |
 | POST | `/api/articles` | Create article (authenticated) |
 | GET | `/api/articles/:id` | Get article (authenticated) |
+| GET | `/api/articles/:id/export/pdf` | Export article as PDF (authenticated). |
 | PUT | `/api/articles/:id` | Update article (creator or admin only) |
 | DELETE | `/api/articles/:id` | Delete article (creator or admin only) |
 | POST | `/api/articles/:id/attachments` | Upload attachment |

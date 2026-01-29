@@ -1,11 +1,12 @@
 import { CONFIG } from '../config/constants.js';
+import { ROLES, ROLE_VALUES } from '../config/roles.js';
 
 export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      primaryKey: true,
     },
     email: {
       type: DataTypes.STRING(255),
@@ -25,15 +26,16 @@ export default (sequelize, DataTypes) => {
       }
     },
     role: {
-      type: DataTypes.ENUM('admin', 'user'),
+      type: DataTypes.ENUM(...ROLE_VALUES),
       allowNull: false,
-      defaultValue: 'user'
+      defaultValue: ROLES.USER,
     }
-  }, {
+  },
+  {
     tableName: 'users',
     timestamps: true,
     hooks: {
-      beforeCreate: async (user) => {
+      beforeCreate: async user => {
         const bcrypt = await import('bcryptjs');
         user.password = await bcrypt.default.hash(user.password, 10);
       }

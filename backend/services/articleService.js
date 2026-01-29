@@ -1,7 +1,7 @@
-import { db } from '../models/index.js';
-import { Op } from 'sequelize';
+import { Op } from 'sequelize'
+import { db } from '../models/index.js'
 
-const { Article, Attachment, Comment, ArticleVersion } = db;
+const { Article, Attachment, Comment, ArticleVersion, User } = db;
 
 export async function getAllArticles(workspace = null, search = null) {
   const whereClause = {};
@@ -45,6 +45,27 @@ export async function getArticleById(id) {
         as: 'comments',
         attributes: ['id', 'author', 'content', 'createdAt', 'updatedAt'],
         order: [['createdAt', 'ASC']]
+      }
+    ]
+  });
+
+  if (!article) {
+    const error = new Error('Article not found');
+    error.code = 'NOT_FOUND';
+    throw error;
+  }
+
+  return article;
+}
+
+export async function getArticleForExport(id) {
+  const article = await Article.findByPk(id, {
+    attributes: ['id', 'title', 'content', 'workspace', 'version', 'createdAt', 'updatedAt', 'userId'],
+    include: [
+      {
+        model: User,
+        as: 'author',
+        attributes: ['id', 'email']
       }
     ]
   });

@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db } from '../models/index.js';
 import { CONFIG } from '../config/constants.js';
+import { ROLES } from '../config/roles.js';
+import { db } from '../models/index.js';
 
 const { User } = db;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -35,7 +36,9 @@ export async function registerUser(data) {
     throw error;
   }
 
-  const existingUser = await User.findOne({ where: { email: email.trim().toLowerCase() } });
+  const existingUser = await User.findOne({
+    where: { email: email.trim().toLowerCase() },
+  })
   if (existingUser) {
     const error = new Error('Email already registered');
     error.code = 'CONFLICT';
@@ -44,7 +47,7 @@ export async function registerUser(data) {
 
   // First user becomes admin
   const userCount = await User.count();
-  const role = userCount === 0 ? 'admin' : 'user';
+  const role = userCount === 0 ? ROLES.ADMIN : ROLES.USER;
 
   const user = await User.create({
     email: email.trim().toLowerCase(),
@@ -67,7 +70,9 @@ export async function loginUser(data) {
     throw error;
   }
 
-  const user = await User.findOne({ where: { email: email.trim().toLowerCase() } });
+	const user = await User.findOne({
+		where: { email: email.trim().toLowerCase() },
+	})
   if (!user) {
     const error = new Error('Invalid credentials');
     error.code = 'AUTH_ERROR';

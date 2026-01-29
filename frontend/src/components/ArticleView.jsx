@@ -16,6 +16,7 @@ function ArticleView() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+	const [exportingPdf, setExportingPdf] = useState(false);
 
   const [uploading, setUploading] = useState(false);
   const [commentAuthor, setCommentAuthor] = useState('');
@@ -68,7 +69,9 @@ function ArticleView() {
 
     try {
       setLoading(true);
-      const response = await apiCall(`${API_URL}/articles/${id}/version/${versionNumber}`);
+      const response = await apiCall(
+        `${API_URL}/articles/${id}/version/${versionNumber}`
+      );
       if (response.ok) {
         const data = await response.json();
         setSelectedVersion(data);
@@ -106,7 +109,14 @@ function ArticleView() {
       return;
     }
 
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+		const allowedTypes = [
+			'image/jpeg',
+			'image/jpg',
+			'image/png',
+			'image/gif',
+			'image/webp',
+			'application/pdf',
+		]
     if (!allowedTypes.includes(file.type)) {
       setError('Invalid file type.');
       e.target.value = '';
@@ -174,7 +184,11 @@ function ArticleView() {
   };
 
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 
   const formatFileSize = (bytes) => {
@@ -182,6 +196,51 @@ function ArticleView() {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
+
+  const safeFilename = name => {
+    const base = (name || 'article').toString().trim();
+    const cleaned = base
+      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+    return (cleaned || 'article').slice(0, 80);
+	};
+
+	const handleExportPdf = async () => {
+		try {
+			setExportingPdf(true);
+			setError(null);
+			const response = await apiCall(`${API_URL}/articles/${id}/export/pdf`, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/pdf',
+				},
+			});
+
+			if (!response.ok) {
+				if (response.status === 404) {
+					setError('Article not found.');
+				} else {
+					setError('Failed to export PDF. Please try again later.');
+				}
+				return;
+			}
+
+			const blob = await response.blob();
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `${safeFilename((selectedVersion || article)?.title)}.pdf`;
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			window.URL.revokeObjectURL(url);
+		} catch (e) {
+			setError(e.message || 'Failed to export PDF');
+		} finally {
+			setExportingPdf(false);
+		}
+	};
 
   const getFileIcon = (mimetype) => {
     if (mimetype.startsWith('image/')) return '🖼️';
@@ -192,9 +251,30 @@ function ArticleView() {
   const displayedArticle = selectedVersion || article;
   const isHistoryMode = selectedVersion !== null;
 
-  if (loading && !displayedArticle) return <div className="container"><p className="loading">Loading article...</p></div>;
-  if (error) return <div className="container"><Link to="/articles" className="back-link">← Back</Link><div className="error">{error}</div></div>;
-  if (!displayedArticle) return <div className="container"><Link to="/articles" className="back-link">← Back</Link><div className="error">Article not found</div></div>;
+	if (loading && !displayedArticle)
+		return (
+			<div className='container'>
+				<p className='loading'>Loading article...</p>
+			</div>
+		)
+	if (error)
+		return (
+			<div className='container'>
+				<Link to='/articles' className='back-link'>
+					← Back
+				</Link>
+				<div className='error'>{error}</div>
+			</div>
+		)
+	if (!displayedArticle)
+		return (
+			<div className='container'>
+				<Link to='/articles' className='back-link'>
+					← Back
+				</Link>
+				<div className='error'>Article not found</div>
+			</div>
+		)
 
   return (
     <div className="container">
@@ -225,6 +305,19 @@ function ArticleView() {
                 Version {displayedArticle.version} • {formatDate(displayedArticle.createdAt)}
               </span>
             </div>
+
+            <div
+							className='article-actions'
+							style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}
+						>
+							<button
+								onClick={handleExportPdf}
+								className='btn'
+								disabled={exportingPdf}
+							>
+								{exportingPdf ? 'Exporting...' : 'Export as PDF'}
+							</button>
+						</div>
 
             {!isHistoryMode && (user?.id === article?.userId || isAdmin) && (
               <div className="article-actions" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
